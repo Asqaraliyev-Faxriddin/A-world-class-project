@@ -4,10 +4,11 @@ import { User } from 'src/common/models/user.model';
 import { LoginUserDto, RegisterUserDto, TokenDto } from './dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from "bcrypt"
+import { MailerService } from 'src/common/mailer/mailer.service';
 
 @Injectable()
 export class AuthService {
-    constructor(@InjectModel(User) private NewUserService:typeof User,private jwtService:JwtService){}
+    constructor(@InjectModel(User) private NewUserService:typeof User,private jwtService:JwtService,private newMailer:MailerService){}
 
 
   async generateToken(payload:any,natija?:boolean){
@@ -35,6 +36,9 @@ export class AuthService {
 
         let hashPassword = await bcrypt.hash(payload.password,10)
 
+        let code = Math.floor(Math.random() * 100000);
+
+    let s =   await this.newMailer.createEmail(payload.email,"Saitdan foydalanish uchun",code)
 
 
         let data2 = await this.NewUserService.create({...payload,password:hashPassword})
