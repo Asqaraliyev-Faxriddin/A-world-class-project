@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'src/common/models/user.model';
 import { LoginUserDto, RegisterUserDto, TokenDto } from './dto/create-user.dto';
@@ -6,12 +6,19 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from "bcrypt"
 import { MailerService } from 'src/common/mailer/mailer.service';
 
+interface Checktoken {
+        id:number,
+        role:string,
+    
+}
+
 @Injectable()
 export class AuthService {
     constructor(@InjectModel(User) private NewUserService:typeof User,private jwtService:JwtService,private newMailer:MailerService){}
 
 
-  async generateToken(payload:any,natija?:boolean){
+
+  async generateToken(payload:Required<Checktoken>,natija?:boolean){
         const accessToken=await  this.jwtService.signAsync({...payload,type:"accessToken"})
         const refreshToken=await  this.jwtService.signAsync({...payload,type:"refreshToken"})
         if(!natija){
@@ -69,13 +76,18 @@ export class AuthService {
     }
 
     async checkToken(tokenDto: Required<TokenDto>) {
+    
+        try {
         let payload = await this.jwtService.verifyAsync(tokenDto.token);
-    
-        let tokens = await this.generateToken({ id: payload.id, role: payload.role }, false);
-    
-        return {
-            ...tokens
-        };
+
+            let tokens = await this.generateToken({ id: payload.id, role: payload.role }, false);
+            return {
+                ...tokens
+            };
+        } catch (error) {
+            throw new UnauthorizedException(error.name)
+        }
+        
     }
     
 }
