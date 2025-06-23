@@ -44,3 +44,41 @@ export class TokenDto {
     @IsJWT()
     token:string
 }
+
+export class verifyDto {
+    @IsNotEmpty()
+    code:number
+
+    @IsNotEmpty()
+    @IsEmail()
+    email:string
+}
+
+export class sendVerify{
+
+    @IsEmail()
+    email:string
+    
+    code :number
+}
+
+export class UserVerify{
+    
+    @IsEmail()
+    email:string
+
+  
+}
+
+export class reset_password{
+
+    @IsEmail()
+    email:string
+
+    @IsNotEmpty()
+    code:number
+
+    @IsNotEmpty()
+    password:string
+
+}

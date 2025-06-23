@@ -5,6 +5,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { User } from './common/models/user.model';
 import { MailerModule } from './common/mailer/mailer.module';
+import { RediseModule } from './common/redise/redise.module';
 
 @Module({
   imports: [
@@ -18,11 +19,11 @@ import { MailerModule } from './common/mailer/mailer.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         dialect: 'postgres',
-        host: config.get<string>('DB_HOS') , 
-        port: config.get<number>('DB_POT'),
-        username: config.get<string>('DB_USERNAME') ,
-        password: config.get<string>('DB_PASSWORD')  ,
-        database: config.get<string>('DB_NAME') ,
+        host: config.get<string>('DB_HOST') || "localhost" , 
+        port: config.get<number>('DB_PORT') || 5432,
+        username: config.get<string>('DB_USERNAME') || "postgres" ,
+        password: config.get<string>('DB_PASSWORD') || "11201111" ,
+        database: config.get<string>('DB_NAME') || "Redis" ,
         autoLoadModels: true,
         synchronize: true,
         models:[User]
@@ -32,6 +33,7 @@ import { MailerModule } from './common/mailer/mailer.module';
     AuthModule,
     UserModule,
     MailerModule,
+    RediseModule,
   ],
 })
 export class AppModule {}
