@@ -27,13 +27,12 @@ export class AuthService {
               accessToken
             }
         }
-            return{
+           return{
               accessToken,
               refreshToken
             }
         
         }
-
 
 
     async register(payload:Required<RegisterUserDto>){
@@ -80,14 +79,14 @@ export class AuthService {
          let payload = await this.jwtService.verifyAsync(tokenDto.token);
          let tokens = await this.generateToken({ id: payload.id, role: payload.role }, false);
             
-            return {
+          return {
                 ...tokens
                 };
          } catch (error) {
             throw new UnauthorizedException(error.name)
          }
         
-         }
+    }
 
     async verify(payload:verifyDto){
 
@@ -106,9 +105,6 @@ export class AuthService {
                 password: hashPassword
               })
             this.redic.del(`register:${payload.email}`)
-        
-
-
             let tokens = await this.generateToken({id:createUser.dataValues.id,role:createUser.dataValues.role},true)
 
             return {
@@ -124,8 +120,7 @@ export class AuthService {
             this.Mailermodel.createEmail(payload.email,"Saitdan foydalanish uchun",code)
             await  this.redic.set(`password:${payload.email}`,JSON.stringify({...payload,code}),400)    
     
-            return  `shu emailingizga xabar yuborildi. ${payload.email} `
-               
+            return  {message:`shu emailingizga xabar yuborildi. ${payload.email} `}
             
         }
 
@@ -137,7 +132,6 @@ export class AuthService {
             let userdata = JSON.parse(text)
             if(userdata.code !== payload.code)
             await this.UsermodelService.update({password:payload.password},{where:{email:payload.email}})
-            
     
             return  `User update `
                
